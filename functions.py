@@ -65,13 +65,34 @@ def clean_data(df):
         "Description"
     ]
     
-    # Remove specified columns
-    cleaned_df = cleaned_df.drop(columns=columns_to_remove)
+     Define column name mapping
+    column_mapping = {
+        "Training Title": "training_title",
+        "PPG ID": "ppg_id",
+        "Full Name": "full_name",
+        "Employee Email": "employee_email",
+        "Manager": "manager",
+        "Manager's Email": "manager_email",
+        "Work Country": "work_country",
+        "Location": "location",
+        "SBU": "sbu",
+        "Job Function": "job_function",
+        "Registration Date": "registration_date",
+        "Registration Status": "registration_status",
+        "Completion Status": "completion_status",
+        "Offering Start Date": "offering_start_date",
+        "Instructors": "instructors",
+        "Primary Location": "primary_location",
+        "Course Attendance Status": "attendance_status"
+    }
+    
+    # Rename the columns
+    cleaned_df = cleaned_df.rename(columns=column_mapping)
     
     # Print information about what we did
     print("\nCleaning summary:")
     print(f"Columns in cleaned data: {len(cleaned_df.columns)}")
-    print("\nRemaining columns:")
+    print("\nRenamed columns:")
     for col in cleaned_df.columns:
         print(f"- {col}")
     
