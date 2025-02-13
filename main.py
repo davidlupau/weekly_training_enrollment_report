@@ -1,4 +1,4 @@
-from functions import load_excel_file, clean_data, remove_duplicates, format_dates, create_report
+from functions import load_excel_file, clean_data, remove_duplicates, format_dates, create_report, process_manager_emails
 
 def main():
     # Load the data
@@ -17,9 +17,13 @@ def main():
 
     print("\ncleaned_data.xlsx successfully created.")
 
-    print("\nSaving facilitator report...")
+    print("\nSaving enrollment report...")
     report_df = create_report(final_df)
-    print("\nReport successfully created.\n")
+    print("\nEnrollment report successfully created.\n")
+
+    print("\nExtracting managers email address...")
+    process_manager_emails(final_df)
+    print("\nManagers email addresses successfully extracted.\n")
     
     return report_df
     

@@ -153,7 +153,6 @@ def format_dates(df):
 def clean_name(name):
     """
     Removes content in parentheses from names.
-    Example: "Congchen Xue （薛从臣） (442646)" -> "Congchen Xue"
     """
     # Remove both regular and Chinese parentheses and their content
     cleaned = re.sub(r'\s*[\(（].*?[\)）]\s*', '', name)
@@ -225,3 +224,44 @@ def create_report(df):
     report_df.to_excel(filename, index=False)
     
     return report_df
+
+def process_manager_emails(df):
+    """
+    Process manager emails and update recipient lists.
+    
+    Args:
+        df (pd.DataFrame): The main enrollment DataFrame
+    """
+    print("\nProcessing manager email addresses...")
+    
+    # Get unique manager emails from the main DataFrame
+    manager_emails = df['manager_email'].unique()
+    
+    try:
+        # Read existing recipients
+        existing_recipients = pd.read_excel('manager_guide_recipients.xlsx')
+        existing_emails = existing_recipients.iloc[:, 0].tolist()  # Take first column
+    except FileNotFoundError:
+        print("No existing recipients file found. Creating new one.")
+        existing_emails = []
+    
+    # Find new email addresses
+    new_emails = [email for email in manager_emails if email not in existing_emails]
+    
+    if new_emails:
+        print(f"Found {len(new_emails)} new manager email(s)")
+        
+        # Save new emails to dated file
+        today = pd.Timestamp.now().strftime('%Y%m%d')
+        new_emails_df = pd.DataFrame(new_emails, columns=['Email'])
+        new_file = os.path.join('outputs', f'{today}_managers.xlsx')
+        new_emails_df.to_excel(new_file, index=False)
+        print(f"New manager emails saved to {new_file}")
+        
+        # Update master recipient list
+        all_emails = existing_emails + new_emails
+        updated_df = pd.DataFrame(all_emails, columns=['Email'])
+        updated_df.to_excel('manager_guide_recipients.xlsx', index=False)
+        print("Master recipient list updated")
+    else:
+        print("No new manager emails found")
