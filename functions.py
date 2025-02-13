@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import re
 
 def load_excel_file(file_path):
     """
@@ -149,6 +150,15 @@ def format_dates(df):
    )
    return df
 
+def clean_name(name):
+    """
+    Removes content in parentheses from names.
+    Example: "Congchen Xue （薛从臣） (442646)" -> "Congchen Xue"
+    """
+    # Remove both regular and Chinese parentheses and their content
+    cleaned = re.sub(r'\s*[\(（].*?[\)）]\s*', '', name)
+    return cleaned.strip()
+
 def create_report(df):
     """
     Creates enrollment report with one row per employee showing all module details.
@@ -166,7 +176,7 @@ def create_report(df):
     
     # Create empty DataFrame for results
     employees = df['ppg_id'].unique()
-    columns = ['PPG ID', 'Name', 'Email', 'Manager', "Manager's Email", 'Country', 'Location']
+    columns = ['PPG ID', 'Name', 'Email', 'Location', 'Country', "SBU"]
     
     for module in module_map.values():
         columns.extend([
@@ -183,12 +193,12 @@ def create_report(df):
         employee_data = df[df['ppg_id'] == ppg_id].iloc[0]
         row = {
             'PPG ID': ppg_id,
-            'Name': employee_data['full_name'],
+            'Name': clean_name(employee_data['full_name']),
             'Email': employee_data['employee_email'],
-            'Manager': employee_data['manager'],
-            "Manager's Email": employee_data['manager_email'],
             'Country': employee_data['work_country'],
-            'Location': employee_data['location']
+            'Location': employee_data['location'],
+            'SBU': employee_data['sbu']
+
         }
         
         # Get module data

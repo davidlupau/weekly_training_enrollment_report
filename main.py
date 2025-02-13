@@ -19,7 +19,7 @@ def main():
 
     print("\nSaving facilitator report...")
     report_df = create_report(final_df)
-    print("\nReport successfully created.")
+    print("\nReport successfully created.\n")
     
     return report_df
     
