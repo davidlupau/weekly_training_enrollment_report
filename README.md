@@ -36,7 +36,7 @@ flowchart TD
     D[Rename Columns to Python Standard (_ instead of spaces)]
     E[Convert employee_id to Numbers]
     F[Format Offering_Start_Date (e.g. Jan-11, remove time)]
-    G[Convert "Enrolled - Pending Approval" to "Pending Approval"]
+    G[Convert 'Enrolled - Pending Approval' to 'Pending Approval']
     H[Filter rows: Keep only Enrolled or Pending Approval]
     I[Check for duplicate enrollments (same module)]
     I1[Same Attendance Status? Keep latest date]
