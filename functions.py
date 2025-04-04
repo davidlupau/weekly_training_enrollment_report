@@ -95,6 +95,12 @@ def clean_data(df):
        'Enrolled - Pending Approval', 'Pending Approval'
    )
 
+   # Update country names
+   cleaned_df['work_country'] = cleaned_df['work_country'].replace({
+    'United States of America': 'USA',
+    'United Kingdom': 'UK'
+    })
+
    print("\nBasic data cleaning completed.")
    return cleaned_df
 
@@ -170,7 +176,7 @@ def create_report(df):
         'EoL Module 4 - Delegating: Engage and Empower People (Multi-Lingual)': 'Module 4',
         'EoL Module 5 - Executing Strategy at the Front Line (Multi-Lingual)': 'Module 5',
         'EoL Module 6 - Driving Change (Multi-Lingual)': 'Module 6',
-        'Reconnect Day - EoL (Multi-Lingual)': 'Reconnect day'
+        'Reconnect Day - EOL (Multi-Lingual)': 'Reconnect day'
     }
     
     # Create empty DataFrame for results
@@ -265,3 +271,52 @@ def process_manager_emails(df):
         print("Master recipient list updated")
     else:
         print("No new manager emails found")
+
+def create_session_report(df):
+    """
+    Creates a report of all sessions with enrollment counts.
+    Groups by module, date, and facilitator.
+    """
+    print("\nCreating session summary report...")
+    
+    # Create session summary
+    session_summary = df.groupby(
+        ['training_title', 'offering_start_date', 'instructors']
+    ).size().reset_index(name='enrolled_count')
+    
+    # Rename training_title to shorter module names
+    module_map = {
+        'EoL Module 1 - Communication: Connect Through Conversation (Multi-Lingual)': 'Module 1',
+        'EoL Module 2 - Coaching: Move People Forward (Multi-Lingual)': 'Module 2',
+        'EoL Module 3 - Resolving Workplace Conflict - (Multi-Lingual)': 'Module 3',
+        'EoL Module 4 - Delegating: Engage and Empower People (Multi-Lingual)': 'Module 4',
+        'EoL Module 5 - Executing Strategy at the Front Line (Multi-Lingual)': 'Module 5',
+        'EoL Module 6 - Driving Change (Multi-Lingual)': 'Module 6',
+        'Reconnect Day - EOL (Multi-Lingual)': 'Reconnect day'
+    }
+    
+    session_summary['module'] = session_summary['training_title'].map(module_map)
+    
+    # Reorder and rename columns
+    session_summary = session_summary[[
+        'module',
+        'offering_start_date',
+        'instructors',
+        'enrolled_count'
+    ]].rename(columns={
+        'offering_start_date': 'date',
+        'instructors': 'facilitator',
+        'enrolled_count': 'number_of_employees'
+    })
+    
+    # Sort by date and module
+    session_summary = session_summary.sort_values(['date', 'module'])
+    
+    # Save to Excel
+    today = pd.Timestamp.now().strftime('%Y%m%d')
+    filename = os.path.join('outputs', f'{today}_session_summary.xlsx')
+    session_summary.to_excel(filename, index=False)
+    
+    print(f"Session summary saved to {filename}")
+    
+    return session_summary

@@ -1,4 +1,4 @@
-from functions import load_excel_file, clean_data, remove_duplicates, format_dates, create_report, process_manager_emails
+from functions import load_excel_file, clean_data, remove_duplicates, format_dates, create_report, process_manager_emails, create_session_report
 
 def main():
     # Load the data
@@ -24,7 +24,10 @@ def main():
     print("\nExtracting managers email address...")
     process_manager_emails(final_df)
     print("\nManagers email addresses successfully extracted.\n")
-    
+
+    # Create session summary
+    session_summary = create_session_report(deduped_df)
+
     return report_df
     
 if __name__ == "__main__":
